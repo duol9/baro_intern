@@ -72,13 +72,13 @@ class UserControllerTest {
 
         User target = saveUser("target", "target123", "타겟", UserRole.ADMIN);
 
-        String token = generateToken(target);
+        String token = generateToken(user);
 
         // when & then
         mockMvc.perform(patch("/admin/users/" + target.getId() + "/roles")
                 .header("Authorization", token))
             .andExpect(status().isForbidden())
-            .andExpect(jsonPath("$.error.code").value("ACCESS_DENIED"));
+            .andExpect(jsonPath("$.code").value("ACCESS_DENIED"));
     }
 
     @Test

@@ -12,6 +12,7 @@ import com.example.baro_intern.domain.user.entity.User;
 import com.example.baro_intern.domain.user.entity.UserRole;
 import com.example.baro_intern.domain.user.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,6 +39,11 @@ class AuthControllerTest {
     @Autowired
     PasswordEncoder passwordEncoder;
 
+    @BeforeEach
+    void setUp() {
+        userRepository.deleteAll();
+    }
+
 
     @Test
     @DisplayName("사용자는 회원가입에 성공 할 수 있다.")
@@ -46,11 +52,11 @@ class AuthControllerTest {
         RegisterRequest registerRequest = new RegisterRequest("tsetuser", "1234", "nick");
 
         // then
-        mockMvc.perform(post("/register")
+        mockMvc.perform(post("/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(registerRequest)))
             .andExpect(status().isCreated())
-            .andExpect(jsonPath("$.data.username").value("user"))
+            .andExpect(jsonPath("$.data.username").value("tsetuser"))
             .andExpect(jsonPath("$.data.nickname").value("nick"))
             .andExpect(jsonPath("$.data.roles[0].role").value("USER"));
     }
@@ -71,7 +77,7 @@ class AuthControllerTest {
         RegisterRequest request = new RegisterRequest("duplicateUser", "1234", "newnick");
 
         // then
-        mockMvc.perform(post("/register")
+        mockMvc.perform(post("/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
             .andExpect(status().isBadRequest())
